@@ -4,8 +4,12 @@
 // but you don't so you're going to write it from scratch:
 var stringifyJSON = function(obj) {
   // your code goes here
-  if(obj === null){
+ 
+    if(obj === null){
       return "null";
+  }
+    if(obj.constructor === Function){
+      return;
   }
   if(obj.constructor === String){
       return '"' + obj + '"';
@@ -17,24 +21,35 @@ var stringifyJSON = function(obj) {
       return obj.toString();
   }
   if(obj.constructor === Array){
+      var arrayCopy = obj.slice();
       var stringObject = '[';
-      var stringIt = function(obj) {
-        if(obj.length === 0){
+      var stringIt = function(arrayCopy) {
+        if(arrayCopy.length === 0){
           return '' + stringObject + ']';
         }else{
           var comma = ',';
-          if(obj.length === 1){
+          if(arrayCopy.length === 1){
               comma = '';
           }
-          stringObject += '' + stringifyJSON(obj.splice(0, 1)[0]) + comma + '';
+          stringObject += '' + stringifyJSON(arrayCopy.splice(0, 1)[0]) + comma + '';
           
-          return stringIt(obj);
+          return stringIt(arrayCopy);
         }
       }
-      return stringIt(obj);
+      return stringIt(arrayCopy);
   }
 
   if(obj.constructor === Object){
+      var objCopy = {};
+      for(var key in obj){
+          if(obj[key] === null){
+              objCopy[key] = obj[key]
+          }else{
+              if(obj[key] !== undefined && obj[key]!== null && obj[key].constructor !== Function ){
+          objCopy[key] = obj[key];
+            }
+        }
+      }
       var stringObj = '{';
       var stringThis = function(obj){
           var keysList = Object.keys(obj);
@@ -50,8 +65,10 @@ var stringifyJSON = function(obj) {
               return stringThis(obj);
           }
       }
-      return stringThis(obj);
+      return stringThis(objCopy);
   }
+
+  
 
 
 };
